@@ -1,16 +1,86 @@
+const connection = require('../database'); // Conexão com o MySQL
 
-const mongoose = require('mongoose');
+// Função para criar um novo bem
+const criarBem = (bemData, callback) => {
+  const sql = `
+    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    bemData.descricao,
+    bemData.numeroPatrimonio,
+    bemData.setor,
+    bemData.contaContabil,
+    bemData.numeroSerie,
+    bemData.status,
+    bemData.usuario,
+    bemData.dataAquisicao,
+    bemData.valorEntrada,
+  ];
 
-const bemSchema = new mongoose.Schema({
-  descricao: String,
-  numeroPatrimonio: String,
-  setor: String,
-  contaContabil: String,
-  numeroSerie: String,
-  status: String, // 'ativo' ou 'inativo'
-  usuario: String, // caso seja notebook
-  dataAquisicao: Date,
-  valorEntrada: Number
-});
+  connection.query(sql, values, (err, results) => {
+    if (err) return callback(err);
+    callback(null, results);
+  });
+};
 
-module.exports = mongoose.model('Bem', bemSchema);
+// Função para listar todos os bens
+const listarBens = (callback) => {
+  const sql = 'SELECT * FROM bens';
+  connection.query(sql, (err, results) => {
+    if (err) return callback(err);
+    callback(null, results);
+  });
+};
+
+// Função para obter um bem específico pelo ID
+const obterBemPorId = (id, callback) => {
+  const sql = 'SELECT * FROM bens WHERE id = ?';
+  connection.query(sql, [id], (err, results) => {
+    if (err) return callback(err);
+    callback(null, results[0]); // Retorna o primeiro resultado ou undefined
+  });
+};
+
+// Função para atualizar um bem pelo ID
+const atualizarBem = (id, bemData, callback) => {
+  const sql = `
+    UPDATE bens
+    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?
+    WHERE id = ?
+  `;
+  const values = [
+    bemData.descricao,
+    bemData.numeroPatrimonio,
+    bemData.setor,
+    bemData.contaContabil,
+    bemData.numeroSerie,
+    bemData.status,
+    bemData.usuario,
+    bemData.dataAquisicao,
+    bemData.valorEntrada,
+    id,
+  ];
+
+  connection.query(sql, values, (err, results) => {
+    if (err) return callback(err);
+    callback(null, results);
+  });
+};
+
+// Função para deletar um bem pelo ID
+const deletarBem = (id, callback) => {
+  const sql = 'DELETE FROM bens WHERE id = ?';
+  connection.query(sql, [id], (err, results) => {
+    if (err) return callback(err);
+    callback(null, results);
+  });
+};
+
+module.exports = {
+  criarBem,
+  listarBens,
+  obterBemPorId,
+  atualizarBem,
+  deletarBem,
+};

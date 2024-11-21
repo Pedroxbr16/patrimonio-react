@@ -1,17 +1,21 @@
-const mongoose = require('mongoose');
+const mysql = require('mysql2');
+require('dotenv').config(); // Carregar as variáveis do .env
 
-// Conexão com o MongoDB
-const mongoURI = 'mongodb://localhost:27017/patrimonio'; // Ajuste a URI conforme necessário
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('Conectado ao MongoDB!');
-})
-.catch((err) => {
-  console.error('Erro ao conectar ao MongoDB:', err);
+// Configuração do banco de dados com .env
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-module.exports = mongoose;
+// Conectar ao banco de dados
+connection.connect((err) => {
+  if (err) {
+    console.error('Erro ao conectar ao MySQL:', err);
+    process.exit(1); // Encerra o processo em caso de erro
+  }
+  console.log('Conectado ao MySQL!');
+});
+
+module.exports = connection;

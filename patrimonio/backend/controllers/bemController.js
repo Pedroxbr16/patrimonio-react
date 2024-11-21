@@ -1,57 +1,130 @@
-const Bem = require('../models/Bem');
+const connection = require('../config/database');
 
 // Controlador para cadastrar um novo bem
-const cadastrarBem = async (req, res) => {
-  try {
-    const novoBem = new Bem(req.body);
-    const bemSalvo = await novoBem.save();
-    res.status(201).json(bemSalvo);
-  } catch (error) {
-    res.status(400).json({ message: 'Erro ao cadastrar bem', error });
-  }
+const cadastrarBem = (req, res) => {
+  const {
+    descricao,
+    numeroPatrimonio,
+    setor,
+    contaContabil,
+    numeroSerie,
+    status,
+    usuario,
+    dataAquisicao,
+    valorEntrada,
+  } = req.body;
+
+  const sql = `
+    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    descricao,
+    numeroPatrimonio,
+    setor,
+    contaContabil,
+    numeroSerie,
+    status,
+    usuario,
+    dataAquisicao,
+    valorEntrada,
+  ];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      return res.status(400).json({ message: 'Erro ao cadastrar bem', error: err });
+    }
+    res.status(201).json({ message: 'Bem cadastrado com sucesso!', bemId: result.insertId });
+  });
 };
 
 // Controlador para listar todos os bens
-const listarBens = async (req, res) => {
-  try {
-    const bens = await Bem.find();
-    res.json(bens);
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao listar bens', error });
-  }
+const listarBens = (req, res) => {
+  const sql = 'SELECT * FROM bens';
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Erro ao listar bens', error: err });
+    }
+    res.json(results);
+  });
 };
 
 // Controlador para obter um bem específico pelo ID
-const obterBemPorId = async (req, res) => {
-  try {
-    const bem = await Bem.findById(req.params.id);
-    if (!bem) return res.status(404).json({ message: 'Bem não encontrado' });
-    res.json(bem);
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao obter bem', error });
-  }
+const obterBemPorId = (req, res) => {
+  const sql = 'SELECT * FROM bens WHERE id = ?';
+  const values = [req.params.id];
+
+  connection.query(sql, values, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Erro ao obter bem', error: err });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Bem não encontrado' });
+    }
+    res.json(results[0]);
+  });
 };
 
 // Controlador para atualizar um bem pelo ID
-const atualizarBem = async (req, res) => {
-  try {
-    const bemAtualizado = await Bem.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!bemAtualizado) return res.status(404).json({ message: 'Bem não encontrado' });
-    res.json(bemAtualizado);
-  } catch (error) {
-    res.status(400).json({ message: 'Erro ao atualizar bem', error });
-  }
+const atualizarBem = (req, res) => {
+  const {
+    descricao,
+    numeroPatrimonio,
+    setor,
+    contaContabil,
+    numeroSerie,
+    status,
+    usuario,
+    dataAquisicao,
+    valorEntrada,
+  } = req.body;
+
+  const sql = `
+    UPDATE bens
+    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?
+    WHERE id = ?
+  `;
+
+  const values = [
+    descricao,
+    numeroPatrimonio,
+    setor,
+    contaContabil,
+    numeroSerie,
+    status,
+    usuario,
+    dataAquisicao,
+    valorEntrada,
+    req.params.id,
+  ];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      return res.status(400).json({ message: 'Erro ao atualizar bem', error: err });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Bem não encontrado' });
+    }
+    res.json({ message: 'Bem atualizado com sucesso!' });
+  });
 };
 
 // Controlador para deletar um bem pelo ID
-const deletarBem = async (req, res) => {
-  try {
-    const bemDeletado = await Bem.findByIdAndDelete(req.params.id);
-    if (!bemDeletado) return res.status(404).json({ message: 'Bem não encontrado' });
-    res.json({ message: 'Bem deletado com sucesso' });
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao deletar bem', error });
-  }
+const deletarBem = (req, res) => {
+  const sql = 'DELETE FROM bens WHERE id = ?';
+  const values = [req.params.id];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Erro ao deletar bem', error: err });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Bem não encontrado' });
+    }
+    res.json({ message: 'Bem deletado com sucesso!' });
+  });
 };
 
 module.exports = {
@@ -59,5 +132,5 @@ module.exports = {
   listarBens,
   obterBemPorId,
   atualizarBem,
-  deletarBem
+  deletarBem,
 };
