@@ -3,8 +3,8 @@ const connection = require('../database'); // Conexão com o MySQL
 // Função para criar um novo bem
 const criarBem = (bemData, callback) => {
   const sql = `
-    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada, marca, modelo, tipoEquipamento)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
     bemData.descricao,
@@ -16,6 +16,9 @@ const criarBem = (bemData, callback) => {
     bemData.usuario,
     bemData.dataAquisicao,
     bemData.valorEntrada,
+    bemData.marca,         // Novo campo
+    bemData.modelo,        // Novo campo
+    bemData.tipoEquipamento, // Novo campo
   ];
 
   connection.query(sql, values, (err, results) => {
@@ -46,7 +49,7 @@ const obterBemPorId = (id, callback) => {
 const atualizarBem = (id, bemData, callback) => {
   const sql = `
     UPDATE bens
-    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?
+    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?, marca = ?, modelo = ?, tipoEquipamento = ?
     WHERE id = ?
   `;
   const values = [
@@ -59,6 +62,9 @@ const atualizarBem = (id, bemData, callback) => {
     bemData.usuario,
     bemData.dataAquisicao,
     bemData.valorEntrada,
+    bemData.marca,         // Novo campo
+    bemData.modelo,        // Novo campo
+    bemData.tipoEquipamento, // Novo campo
     id,
   ];
 

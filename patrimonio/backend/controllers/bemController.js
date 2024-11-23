@@ -12,11 +12,14 @@ const cadastrarBem = (req, res) => {
     usuario,
     dataAquisicao,
     valorEntrada,
+    marca,
+    modelo,
+    tipoEquipamento, // Novos campos
   } = req.body;
 
   const sql = `
-    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada, marca, modelo, tipoEquipamento)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -29,6 +32,9 @@ const cadastrarBem = (req, res) => {
     usuario,
     dataAquisicao,
     valorEntrada,
+    marca,
+    modelo,
+    tipoEquipamento, // Novos campos
   ];
 
   connection.query(sql, values, (err, result) => {
@@ -79,11 +85,14 @@ const atualizarBem = (req, res) => {
     usuario,
     dataAquisicao,
     valorEntrada,
+    marca,
+    modelo,
+    tipoEquipamento, // Novos campos
   } = req.body;
 
   const sql = `
     UPDATE bens
-    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?
+    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?, marca = ?, modelo = ?, tipoEquipamento = ?
     WHERE id = ?
   `;
 
@@ -97,6 +106,9 @@ const atualizarBem = (req, res) => {
     usuario,
     dataAquisicao,
     valorEntrada,
+    marca,
+    modelo,
+    tipoEquipamento, // Novos campos
     req.params.id,
   ];
 

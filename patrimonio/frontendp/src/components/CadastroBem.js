@@ -1,4 +1,3 @@
-// src/components/CadastroBem.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../css/CadastroBem.css'; // Importa o CSS específico para o formulário
@@ -13,7 +12,10 @@ function CadastroBem() {
     status: 'ativo',
     usuario: '',
     dataAquisicao: '',
-    valorEntrada: ''
+    valorEntrada: '',
+    marca: '', // Novo campo
+    modelo: '', // Novo campo
+    tipoEquipamento: '', // Novo campo
   });
 
   // Função para formatar o valor de entrada como moeda
@@ -21,7 +23,7 @@ function CadastroBem() {
     const numericValue = value.replace(/\D/g, ''); // Remove tudo que não é número
     const formattedValue = new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'BRL',
     }).format(numericValue / 100);
     return formattedValue;
   };
@@ -30,7 +32,7 @@ function CadastroBem() {
     const { name, value } = e.target;
 
     // Formatação para o campo Valor de Entrada
-    if (name === "valorEntrada") {
+    if (name === 'valorEntrada') {
       setFormData({ ...formData, [name]: formatCurrency(value) });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -143,6 +145,40 @@ function CadastroBem() {
             name="valorEntrada"
             placeholder="Valor de Entrada"
             value={formData.valorEntrada}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        {/* Novos campos */}
+        <div className="form-group">
+          <label>Marca</label>
+          <input
+            type="text"
+            name="marca"
+            placeholder="Marca do Equipamento"
+            value={formData.marca}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Modelo</label>
+          <input
+            type="text"
+            name="modelo"
+            placeholder="Modelo do Equipamento"
+            value={formData.modelo}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Tipo do Equipamento</label>
+          <input
+            type="text"
+            name="tipoEquipamento"
+            placeholder="Tipo do Equipamento"
+            value={formData.tipoEquipamento}
             onChange={handleChange}
             required
           />

@@ -11,16 +11,16 @@ function ConsultaBem() {
     status: '',
   });
 
-//   useEffect(() => {
-//     // Função para buscar os dados dos bens - troque a URL pelo endpoint do seu backend
-//     const fetchBens = async () => {
-//       const response = await fetch('http://localhost:5000/bens');
-//       const data = await response.json();
-//       setBens(data);
-//     };
+  useEffect(() => {
+    // Função para buscar os dados dos bens - troque a URL pelo endpoint do seu backend
+    const fetchBens = async () => {
+      const response = await fetch('http://localhost:5000/bens');
+      const data = await response.json();
+      setBens(data);
+    };
 
-//     fetchBens();
-//   }, []);
+    fetchBens();
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

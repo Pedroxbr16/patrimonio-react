@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 function RelatorioBens() {
-  const [bens] = useState([
-    { numeroSerie: '12345', descricao: 'Notebook', numeroPatrimonio: '001', marca: 'Dell', modelo: 'Inspiron', setor: 'TI', tipoEquipamento: 'Computador', status: 'Ativo' },
-    { numeroSerie: '67890', descricao: 'Monitor', numeroPatrimonio: '002', marca: 'LG', modelo: 'UltraWide', setor: 'Administração', tipoEquipamento: 'Monitor', status: 'Inativo' },
-    // Adicione mais itens aqui para simular dados
-  ]);
-
+  const [bens, setBens] = useState([]);
   const [filtros, setFiltros] = useState({
     marca: '',
     modelo: '',
@@ -17,13 +12,26 @@ function RelatorioBens() {
     status: '',
   });
 
-  // Função para alterar os filtros
+  // Lógica para buscar os dados dos bens
+  useEffect(() => {
+    const fetchBens = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/bens'); // Troque pela URL do seu backend
+        const data = await response.json();
+        setBens(data);
+      } catch (error) {
+        console.error('Erro ao buscar bens:', error);
+      }
+    };
+
+    fetchBens();
+  }, []);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFiltros({ ...filtros, [name]: value });
   };
 
-  // Função para aplicar os filtros
   const applyFilters = (bem) => {
     return (
       (filtros.marca === '' || bem.marca.includes(filtros.marca)) &&
@@ -34,14 +42,13 @@ function RelatorioBens() {
     );
   };
 
-  // Função para exportar o relatório para PDF
   const exportarPDF = () => {
     const doc = new jsPDF();
     doc.text('Relatório de Bens Patrimoniais', 20, 10);
     doc.autoTable({
       startY: 20,
       head: [['Nº de Série', 'Descrição do Bem', 'Nº de Patrimônio', 'Marca', 'Modelo', 'Setor', 'Tipo do Equipamento', 'Status']],
-      body: bens.filter(applyFilters).map(bem => [
+      body: bens.filter(applyFilters).map((bem) => [
         bem.numeroSerie,
         bem.descricao,
         bem.numeroPatrimonio,
