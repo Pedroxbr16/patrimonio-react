@@ -1,86 +1,75 @@
-const connection = require('../database'); // Conexão com o MySQL
+const { connectToDatabase } = require('../config/database');
+const { ObjectId } = require('mongodb'); // Para converter IDs do MongoDB
 
 // Função para criar um novo bem
-const criarBem = (bemData, callback) => {
-  const sql = `
-    INSERT INTO bens (descricao, numeroPatrimonio, setor, contaContabil, numeroSerie, status, usuario, dataAquisicao, valorEntrada, marca, modelo, tipoEquipamento)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  const values = [
-    bemData.descricao,
-    bemData.numeroPatrimonio,
-    bemData.setor,
-    bemData.contaContabil,
-    bemData.numeroSerie,
-    bemData.status,
-    bemData.usuario,
-    bemData.dataAquisicao,
-    bemData.valorEntrada,
-    bemData.marca,         // Novo campo
-    bemData.modelo,        // Novo campo
-    bemData.tipoEquipamento, // Novo campo
-  ];
-
-  connection.query(sql, values, (err, results) => {
-    if (err) return callback(err);
-    callback(null, results);
-  });
+const criarBem = async (bemData, callback) => {
+  try {
+    const db = await connectToDatabase();
+    const result = await db.collection('bens').insertOne(bemData); // Insere um novo documento na coleção "bens"
+    callback(null, { id: result.insertedId, ...bemData });
+  } catch (err) {
+    callback(err);
+  }
 };
 
 // Função para listar todos os bens
-const listarBens = (callback) => {
-  const sql = 'SELECT * FROM bens';
-  connection.query(sql, (err, results) => {
-    if (err) return callback(err);
-    callback(null, results);
-  });
+const listarBens = async (callback) => {
+  try {
+    const db = await connectToDatabase();
+    const bens = await db.collection('bens').find({}).toArray(); // Retorna todos os documentos da coleção "bens"
+    callback(null, bens);
+  } catch (err) {
+    callback(err);
+  }
 };
 
 // Função para obter um bem específico pelo ID
-const obterBemPorId = (id, callback) => {
-  const sql = 'SELECT * FROM bens WHERE id = ?';
-  connection.query(sql, [id], (err, results) => {
-    if (err) return callback(err);
-    callback(null, results[0]); // Retorna o primeiro resultado ou undefined
-  });
+const obterBemPorId = async (id, callback) => {
+  try {
+    const db = await connectToDatabase();
+    const bem = await db.collection('bens').findOne({ _id: new ObjectId(id) }); // Busca um documento pelo `_id`
+    if (!bem) {
+      return callback({ message: 'Bem não encontrado' });
+    }
+    callback(null, bem);
+  } catch (err) {
+    callback(err);
+  }
 };
 
 // Função para atualizar um bem pelo ID
-const atualizarBem = (id, bemData, callback) => {
-  const sql = `
-    UPDATE bens
-    SET descricao = ?, numeroPatrimonio = ?, setor = ?, contaContabil = ?, numeroSerie = ?, status = ?, usuario = ?, dataAquisicao = ?, valorEntrada = ?, marca = ?, modelo = ?, tipoEquipamento = ?
-    WHERE id = ?
-  `;
-  const values = [
-    bemData.descricao,
-    bemData.numeroPatrimonio,
-    bemData.setor,
-    bemData.contaContabil,
-    bemData.numeroSerie,
-    bemData.status,
-    bemData.usuario,
-    bemData.dataAquisicao,
-    bemData.valorEntrada,
-    bemData.marca,         // Novo campo
-    bemData.modelo,        // Novo campo
-    bemData.tipoEquipamento, // Novo campo
-    id,
-  ];
+const atualizarBem = async (id, bemData, callback) => {
+  try {
+    const db = await connectToDatabase();
+    const result = await db.collection('bens').updateOne(
+      { _id: new ObjectId(id) }, // Filtro pelo `_id`
+      { $set: bemData } // Atualiza apenas os campos especificados
+    );
 
-  connection.query(sql, values, (err, results) => {
-    if (err) return callback(err);
-    callback(null, results);
-  });
+    if (result.matchedCount === 0) {
+      return callback({ message: 'Bem não encontrado' });
+    }
+
+    callback(null, { id, ...bemData });
+  } catch (err) {
+    callback(err);
+  }
 };
 
 // Função para deletar um bem pelo ID
-const deletarBem = (id, callback) => {
-  const sql = 'DELETE FROM bens WHERE id = ?';
-  connection.query(sql, [id], (err, results) => {
-    if (err) return callback(err);
-    callback(null, results);
-  });
+const deletarBem = async (id, callback) => {
+  try {
+    const db = await connectToDatabase();
+    const result = await db.collection('bens').deleteOne({ _id: new ObjectId(id) }); // Remove o documento pelo `_id`
+
+    if (result.deletedCount === 0) {
+      return callback({ message: 'Bem não encontrado' });
+    }
+
+    callback(null, { message: 'Bem deletado com sucesso!' });
+  } catch (err) {
+    callback(err);
+  }
 };
 
 module.exports = {

@@ -13,9 +13,9 @@ function CadastroBem() {
     usuario: '',
     dataAquisicao: '',
     valorEntrada: '',
-    marca: '', // Novo campo
-    modelo: '', // Novo campo
-    tipoEquipamento: '', // Novo campo
+    marca: '',
+    modelo: '',
+    tipoEquipamento: '',
   });
 
   // Função para formatar o valor de entrada como moeda
@@ -42,13 +42,28 @@ function CadastroBem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/bens/', {
-        ...formData,
-        numeroPatrimonio: `CGE${formData.numeroPatrimonio}`, // Adiciona o prefixo ao enviar
-      });
+      // Envia os dados para o backend
+      const response = await axios.post('http://localhost:5000/bens/', formData);
+      console.log('Resposta do servidor:', response.data);
       alert('Bem cadastrado com sucesso!');
+      // Limpar o formulário após o envio
+      setFormData({
+        descricao: '',
+        numeroPatrimonio: '',
+        setor: '',
+        contaContabil: '',
+        numeroSerie: '',
+        status: 'ativo',
+        usuario: '',
+        dataAquisicao: '',
+        valorEntrada: '',
+        marca: '',
+        modelo: '',
+        tipoEquipamento: '',
+      });
     } catch (error) {
       console.error('Erro ao cadastrar o bem:', error);
+      alert('Erro ao cadastrar o bem. Verifique os dados e tente novamente.');
     }
   };
 

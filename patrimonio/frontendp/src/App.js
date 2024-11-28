@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import CadastroBem from './components/CadastroBem';
 import ConsultaBem from './components/ConsultaBem';
 import RelatorioBens from './components/RelatorioBens';
+import EdicaoBem from './components/EdicaoBem';
 import './css/App.css'; 
 
 // Componente Home (Página inicial)
@@ -27,7 +28,8 @@ function App() {
             <Link to="/">Home</Link> |{' '}
             <Link to="/cadastro">Cadastro de Bem</Link> |{' '}
             <Link to="/consulta">Consulta de Bem</Link> |{' '}
-            <Link to="/relatorio">Relatório de Bens</Link>
+            <Link to="/relatorio">Relatório de Bens</Link> 
+         
           </nav>
         </header>
 
@@ -37,6 +39,7 @@ function App() {
           <Route path="/cadastro" element={<CadastroBem />} />
           <Route path="/consulta" element={<ConsultaBem />} />
           <Route path="/relatorio" element={<RelatorioBens />} />
+          <Route path="/editar-bem" element={<EdicaoBem/>} />
         </Routes>
       </div>
     </Router>
