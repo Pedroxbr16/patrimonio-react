@@ -12,7 +12,7 @@ function CadastroBem() {
     status: 'ativo',
     usuario: '',
     dataAquisicao: '',
-    valorEntrada: '',
+    valorEntrada: 'R$ 0,00', // Valor inicial com o símbolo R$
     marca: '',
     modelo: '',
     tipoEquipamento: '',
@@ -56,7 +56,7 @@ function CadastroBem() {
         status: 'ativo',
         usuario: '',
         dataAquisicao: '',
-        valorEntrada: '',
+        valorEntrada: 'R$ 0,00',
         marca: '',
         modelo: '',
         tipoEquipamento: '',
@@ -164,7 +164,6 @@ function CadastroBem() {
             required
           />
         </div>
-        {/* Novos campos */}
         <div className="form-group">
           <label>Marca</label>
           <input
